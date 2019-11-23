@@ -2,13 +2,15 @@
   "name": "IlliniBoard",
   "version": "0.0.1",
   "description": "Keeps you up to date on all things",
-  "default_locale": "en",
   "manifest_version": 2,
   "permissions": [
     "activeTab",
-    "webRequest",
-    "*://*.illiniboard.com/*"
+    "*://*.illiniboard.com/*",
+    "storage"
   ],
+  "browser_action": {
+    "default_title": "illiniboard"
+  },
   "content_scripts": [
     {
       "matches": ["*://*.illiniboard.com/*"],
