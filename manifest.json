@@ -1,7 +1,7 @@
 {
   "name": "IlliniBoard",
   "version": "0.0.1",
-  "description": "Keeps you up to date on all things on",
+  "description": "Keeps you up to date on Illiniboard.com articles",
   "manifest_version": 2,
   "permissions": [
     "activeTab",
