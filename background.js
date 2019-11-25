@@ -1,8 +1,21 @@
 let articles = [];
 
+let req = new XMLHttpRequest();
+req.addEventListener('load', handleXML);
+
+requestIlliniboardRSS();
+
+function requestIlliniboardRSS() {
+  let ibRSS = 'https://illiniboard.com/static/rss/rss.xml'
+
+  req.open('GET', ibRSS + ((/\?/).test(ibRSS) ? "&" : "?") + (new Date()).getTime());
+  req.send();
+}
+
 // this function did not get hoisted when I had it below - not sure why
-const handleXML = () => {
+function handleXML() {
   let ibXML = req.responseXML;
+  articles = [];
 
   if (ibXML.hasChildNodes()) {
     let items = ibXML.getElementsByTagName('item');
@@ -10,19 +23,13 @@ const handleXML = () => {
     for (var i = 0; i < items.length; i++) {
       let article = {};
       populateArticleObj(article, items[i]);
+      articles.push(article);
       saveArticlesInStorage(article);
-      chrome.browserAction.setBadgeText({text: "69"});
     }
 
+    updateBadge();
   }
 }
-
-let ibRSS = 'https://illiniboard.com/static/rss/rss.xml'
-
-let req = new XMLHttpRequest();
-req.addEventListener('load', handleXML);
-req.open('GET', ibRSS + ((/\?/).test(ibRSS) ? "&" : "?") + (new Date()).getTime());
-req.send();
 
 function populateArticleObj(article, item) {
   for (var i = 0; i < item.childElementCount; i++) {
@@ -64,4 +71,36 @@ function saveArticlesInStorage(article) {
       });
     }
   });
+}
+
+function updateBadge() {
+  chrome.storage.sync.get('lastView', item => {
+    if (item.lastView != null) {
+      let lastView = new Date(item['lastView']);
+
+      let unreadCount = getUnreadCount(lastView);
+
+      if (unreadCount > 0) {
+        chrome.browserAction.setBadgeText({text: unreadCount});
+      } else {
+        chrome.browserAction.setBadgeText({text: ""});
+      }
+    } else {
+      chrome.browserAction.setBadgeText({text: ""});
+    }
+  });
+}
+
+function getUnreadCount(lastView) {
+  let count = 0;
+
+  for (var article of articles) {
+    let pubDate = new Date(article.pubDate);
+
+    if (pubDate > lastView) {
+      count++;
+    }
+  }
+
+  return count;
 }
