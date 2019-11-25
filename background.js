@@ -17,9 +17,11 @@ const handleXML = () => {
   }
 }
 
+let ibRSS = 'https://illiniboard.com/static/rss/rss.xml'
+
 let req = new XMLHttpRequest();
 req.addEventListener('load', handleXML);
-req.open('GET', 'https://illiniboard.com/static/rss/rss.xml');
+req.open('GET', ibRSS + ((/\?/).test(ibRSS) ? "&" : "?") + (new Date()).getTime());
 req.send();
 
 function populateArticleObj(article, item) {

@@ -1,4 +1,30 @@
+body {
+  width: 300px;
+}
+
 .logo-frame img {
   height: auto;
   width: 250px;
+}
+
+/* Article Rows */
+
+.article {
+  display: flex;
+  justify-content: space-between;
+}
+
+.left {
+  width: 180px;
+}
+
+.title h4 {
+  margin: 10px 0;
+}
+
+.right {
+  align-items: center;
+  display: flex;
+  padding: 0 0 0 15px;
+  width: 120px;
 }
