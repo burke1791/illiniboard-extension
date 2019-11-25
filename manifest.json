@@ -1,7 +1,7 @@
 {
   "name": "IlliniBoard",
   "version": "0.0.1",
-  "description": "Keeps you up to date on all things",
+  "description": "Keeps you up to date on all things on",
   "manifest_version": 2,
   "permissions": [
     "activeTab",
@@ -15,8 +15,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.illiniboard.com/*"],
-      "js": ["illiniboard.js"]
+      "matches": ["*://*.illiniboard.com/story/*"],
+      "js": ["illiniboardContent.js"],
+      "run_at": "document_idle"
     }
   ],
   "background": {
