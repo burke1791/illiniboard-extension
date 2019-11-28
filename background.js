@@ -81,7 +81,7 @@ function updateBadge() {
       let unreadCount = getUnreadCount(lastView);
 
       if (unreadCount > 0) {
-        chrome.browserAction.setBadgeText({text: unreadCount});
+        chrome.browserAction.setBadgeText({text: String(unreadCount)});
       } else {
         chrome.browserAction.setBadgeText({text: ""});
       }
