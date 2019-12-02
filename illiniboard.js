@@ -1,5 +1,7 @@
 let articles = [];
 
+registerEventListeners();
+
 updateRecentArticlesNode();
 updateFreeArticlesNode();
 
@@ -7,12 +9,6 @@ function updateRecentArticlesNode() {
   let recentArticles = document.getElementById('articleList');
 
   emptyDOMNode(recentArticles);
-
-  let h3 = document.createElement('h3');
-  h3.textContent = 'Latest Unread Posts';
-  
-  recentArticles.appendChild(h3);
-  recentArticles.appendChild(document.createElement('hr'));
 
   articles = [];
   
@@ -172,6 +168,27 @@ function emptyDOMNode(node) {
   }
 }
 
+function registerEventListeners() {
+  let resetUnreadBtn = document.getElementById('clearUnreadBtn');
+  resetUnreadBtn.addEventListener('click', clearUnreadList);
+
+  let bugBtn = document.getElementById('bug-btn');
+  bugBtn.addEventListener('click', reportBug);
+}
+
+function clearUnreadList() {
+  chrome.storage.sync.get(null, items => {
+    for (var link in items) {
+      let article = items[link];
+      article.viewed = true;
+
+      chrome.storage.sync.set({[link]: article}, () => {
+        updateRecentArticlesNode();
+      });
+    }
+  });
+}
+
 const notInterested = (e) => {
   let link = e.target.getAttribute('data-article');
 
@@ -183,4 +200,8 @@ const notInterested = (e) => {
       updateRecentArticlesNode();
     });
   });
+}
+
+function reportBug() {
+  window.open('https://github.com/burke1791/illiniboard-extension/issues', '_blank');
 }

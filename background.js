@@ -1,5 +1,12 @@
 let articles = [];
 
+chrome.runtime.onInstalled.addListener(options => {
+  if (options.reason == 'install') {
+    let installDate = new Date();
+    chrome.storage.sync.set({'installDate': installDate.toLocaleString()});
+  }
+});
+
 let req = new XMLHttpRequest();
 req.addEventListener('load', handleXML);
 
@@ -12,7 +19,6 @@ function requestIlliniboardRSS() {
   req.send();
 }
 
-// this function did not get hoisted when I had it below - not sure why
 function handleXML() {
   let ibXML = req.responseXML;
   articles = [];
@@ -75,32 +81,39 @@ function saveArticlesInStorage(article) {
 
 function updateBadge() {
   chrome.storage.sync.get('lastView', item => {
-    if (item.lastView != null) {
-      let lastView = new Date(item['lastView']);
+    // set lastView to the unix epoch if it doesn't exist
+    let lastView = item.lastView != null ? new Date(item['lastView']) : new Date(0);
 
-      let unreadCount = getUnreadCount(lastView);
+    getUnreadCount(lastView).then(unreadCount => {
+      console.log(unreadCount);
 
-      if (unreadCount > 0) {
+      if (unreadCount > 9) {
+        chrome.browserAction.setBadgeText({text: "9+"});
+      } else if (unreadCount > 0) {
         chrome.browserAction.setBadgeText({text: String(unreadCount)});
       } else {
         chrome.browserAction.setBadgeText({text: ""});
       }
-    } else {
-      chrome.browserAction.setBadgeText({text: ""});
-    }
+    });
   });
 }
 
 function getUnreadCount(lastView) {
   let count = 0;
 
-  for (var article of articles) {
-    let pubDate = new Date(article.pubDate);
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(null, articles => {
+      for (var link in articles) {
+        if (articles[link].pubDate != null) {
+          let pubDate = new Date(articles[link].pubDate);
+      
+          if (pubDate > lastView && !articles[link].viewed) {
+            count++;
+          }
+        }
+      }
 
-    if (pubDate > lastView) {
-      count++;
-    }
-  }
-
-  return count;
+      resolve(count);
+    });
+  });
 }
