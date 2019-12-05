@@ -1,12 +1,13 @@
 {
   "name": "IlliniBoard",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Keeps you up to date on Illiniboard.com articles",
   "manifest_version": 2,
   "permissions": [
     "activeTab",
     "*://*.illiniboard.com/*",
-    "storage"
+    "storage",
+    "webNavigation"
   ],
   "browser_action": {
     "default_icon": "icon_128.png",
