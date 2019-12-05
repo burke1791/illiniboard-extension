@@ -6,5 +6,5 @@ An extension for [Chrome](https://www.google.com/chrome/) and [Brave](https://br
 
 It will show a badge on the extension icon when a new article has been posted
 
-![badge screenshot](https://github.com/burke1791/illiniboard-extension/screenshots/ib_badge_sc.png)
+![badge screenshot](https://github.com/burke1791/illiniboard-extension/blob/master/screenshots/ib_badge_sc.png)
 
