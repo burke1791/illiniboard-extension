@@ -7,6 +7,10 @@ chrome.runtime.onInstalled.addListener(options => {
   }
 });
 
+chrome.webNavigation.onCompleted.addListener(function() {
+  requestIlliniboardRSS();
+});
+
 let req = new XMLHttpRequest();
 req.addEventListener('load', handleXML);
 
@@ -85,8 +89,6 @@ function updateBadge() {
     let lastView = item.lastView != null ? new Date(item['lastView']) : new Date(0);
 
     getUnreadCount(lastView).then(unreadCount => {
-      console.log(unreadCount);
-
       if (unreadCount > 9) {
         chrome.browserAction.setBadgeText({text: "9+"});
       } else if (unreadCount > 0) {
