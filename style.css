@@ -3,6 +3,10 @@ body {
   width: 400px;
 }
 
+button:hover {
+  cursor: pointer;
+}
+
 .logo-frame img {
   height: auto;
   width: 250px;
