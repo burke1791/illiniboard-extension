@@ -16,7 +16,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.illiniboard.com/story/*"],
+      "matches": ["*://*.illiniboard.com/*"],
       "js": ["js/illiniboardContent.js"],
       "run_at": "document_idle"
     }
