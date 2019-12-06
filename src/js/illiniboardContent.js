@@ -1,3 +1,4 @@
+updateLastVisit();
 updateFreeArticleCount();
 updateArticleReadStatus();
 
@@ -8,16 +9,22 @@ document.onreadystatechange = function () {
   }
 }
 
+function updateLastVisit() {
+  let now = new Date().toISOString();
+
+  chrome.storage.sync.set({
+    'lastView': now
+  });
+}
+
 function updateFreeArticleCount() {
   let counter = document.getElementsByClassName('tpm-numeral');
 
   if (counter.length == 1) {
     let freeCount = Number(counter.item(0).textContent);
-    let now = new Date().toISOString();
 
     chrome.storage.sync.set({
-      'freeCount': freeCount,
-      'lastView': now
+      'freeCount': freeCount
     });
   }
 }
