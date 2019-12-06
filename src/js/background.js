@@ -17,13 +17,27 @@ req.addEventListener('load', handleXML);
 requestIlliniboardRSS();
 
 function requestIlliniboardRSS() {
-  let ibRSS = 'https://illiniboard.com/static/rss/rss.xml'
+  // only hit the RSS feed if it's been 5 minutes since the last poll
+  chrome.storage.sync.get('lastPoll', items => {
+    let lastPoll = new Date(items['lastPoll']);
+    let now = new Date();
 
-  req.open('GET', ibRSS + ((/\?/).test(ibRSS) ? "&" : "?") + (new Date()).getTime());
-  req.send();
+    let diff = Math.abs(now - lastPoll);
+    let diffMin = Math.ceil(diff / 1000 / 60);
+
+    if (diffMin > 5) {
+      let ibRSS = 'https://illiniboard.com/static/rss/rss.xml'
+
+      req.open('GET', ibRSS + ((/\?/).test(ibRSS) ? "&" : "?") + (new Date()).getTime());
+      req.send();
+    }
+  });
 }
 
 function handleXML() {
+  // log the updated pollDate
+  setLatestPollDate();
+
   let ibXML = req.responseXML;
   articles = [];
 
@@ -118,4 +132,10 @@ function getUnreadCount(lastView) {
       resolve(count);
     });
   });
+}
+
+function setLatestPollDate() {
+  let pollDate = new Date().toLocaleString();
+
+  chrome.storage.sync.set({'lastPoll': pollDate});
 }
