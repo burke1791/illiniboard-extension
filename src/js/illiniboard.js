@@ -166,7 +166,7 @@ function generateSigninMessage() {
   let signInParent = document.getElementById('signinMessage');
 
   let a = document.createElement('a');
-  a.setAttribute('href', 'https://illiniboard.com/login');
+  a.setAttribute('href', 'https://buy.tinypass.com/tkt/ps/login?r=%7Bjzx%7DLcbrKsQKJAlGr2BTN4pNuYYrQRmnKAu6YPLKZ-eXNrOv5uh2Ku4o2SsS9ViKE3d9xdsnkQ6hQKwsTod_h_TJ_LghGKZCCKqHuJGVU5JZkjzk0hekR39g_0ImoOwCfD6lWC8TFvhBYmCYrrGdQZB9pJiU3rWOiOPBJcHVLpgIlcUb7ov0_cjt68jwAwxhmRW_Z7_8A9tTgGS1FC48zwoz3-Wgjo6RLd0H_nD9i2rdODBKsCmAzQZSQAIFZvLkg3Ibipwpa6HVCfOyPNJUpwku9ldwVRLXiYK7MH9762mmsRqTbhmMMhYk1fDH3Oj-bjdJKuJWqaHRokHtv-Yjk3sJf_OcM0AHlZzVYrw8CgG8WdsHlIMyEi3JYb0Z3kYI-wom&src=m&trans_id=k3y7urcb-z1seyf2pru&aid=FQWckFzLcA');
   a.setAttribute('target', '_blank');
   a.textContent = 'login';
 
