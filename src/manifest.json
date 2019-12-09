@@ -1,7 +1,11 @@
 {
   "name": "IlliniBoard",
-  "version": "0.1.0",
-  "description": "Keeps you up to date on Illiniboard.com articles",
+  "version": "0.2.0",
+  "description": "Keeps you up to date on illiniboard.com articles",
+  "icons": {
+    "128": "images/icon_128.png",
+    "48": "images/icon_48.png"
+  },
   "manifest_version": 2,
   "permissions": [
     "activeTab",
