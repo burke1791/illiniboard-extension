@@ -5,18 +5,20 @@ chrome.runtime.onInstalled.addListener(options => {
     let installDate = new Date();
     chrome.storage.sync.set({'installDate': installDate.toLocaleString()});
   }
+
+  requestIlliniboardRSS(true);
 });
 
 chrome.webNavigation.onCompleted.addListener(function() {
-  requestIlliniboardRSS();
+  requestIlliniboardRSS(false);
 });
 
 let req = new XMLHttpRequest();
 req.addEventListener('load', handleXML);
 
-requestIlliniboardRSS();
+requestIlliniboardRSS(false);
 
-function requestIlliniboardRSS() {
+function requestIlliniboardRSS(forceReq) {
   // only hit the RSS feed if it's been 5 minutes since the last poll
   chrome.storage.sync.get('lastPoll', items => {
     let lastPoll = new Date(items['lastPoll']);
@@ -24,8 +26,8 @@ function requestIlliniboardRSS() {
 
     let diff = Math.abs(now - lastPoll);
     let diffMin = Math.ceil(diff / 1000 / 60);
-
-    if (diffMin > 5) {
+    
+    if (diffMin > 5 || forceReq) {
       let ibRSS = 'https://illiniboard.com/static/rss/rss.xml'
 
       req.open('GET', ibRSS + ((/\?/).test(ibRSS) ? "&" : "?") + (new Date()).getTime());
@@ -103,7 +105,7 @@ function saveArticlesInStorage(article) {
 function updateBadge() {
   chrome.storage.sync.get('lastView', item => {
     // set lastView to the unix epoch if it doesn't exist
-    let lastView = item.lastView != null ? new Date(item['lastView']) : new Date(0);
+    let lastView = item.lastView != null ? new Date(item['lastView']) : new Date();
 
     getUnreadCount(lastView).then(unreadCount => {
       if (unreadCount > 9) {
