@@ -33,9 +33,14 @@ function updateFreeArticlesNode() {
 
   emptyDOMNode(freeArticles);
 
-  chrome.storage.sync.get(['lastView', 'freeCount'], items => {
-    // if we don't have a lastView timestamp then the freeCount is worthless because it might be a new month
-    if (items['lastView']) {
+  chrome.storage.sync.get(['lastView', 'freeCount', 'subscription'], items => {
+    let subscription = items['subscription'];
+
+    if (subscription) {
+      generateUnlimitedAccessHTML();
+      clearSigninMessage();
+    } else if (items['lastView']) {
+      // if we don't have a lastView timestamp then the freeCount is worthless because it might be a new month
       let lastViewMonth = new Date(items['lastView']).getMonth();
       let currentMonth = new Date().getMonth();
 
@@ -44,8 +49,16 @@ function updateFreeArticlesNode() {
       } else {
         generateFreeArticlesHTML(6);
       }
+
+      generateSigninMessage();
     } else {
       generateFreeArticlesHTML(null);
+
+      if (subscription) {
+        clearSigninMessage();
+      } else {
+        generateSigninMessage();
+      }
     }
   });
 }
@@ -138,6 +151,33 @@ const generateFreeArticlesHTML = (freeCount) => {
 
     freeArticlesNode.appendChild(h3);
   }
+}
+
+function generateUnlimitedAccessHTML() {
+  let freeArticlesNode = document.getElementById('freeArticles');
+
+  let h3 = document.createElement('h3');
+  h3.textContent = 'You have unlimited access, thank you for your support!';
+
+  freeArticlesNode.appendChild(h3);
+}
+
+function generateSigninMessage() {
+  let signInParent = document.getElementById('signinMessage');
+
+  let a = document.createElement('a');
+  a.setAttribute('href', 'https://illiniboard.com/login');
+  a.setAttribute('target', '_blank');
+  a.textContent = 'login';
+
+  signInParent.innerHTML = 'Please ';
+  signInParent.appendChild(a);
+  signInParent.innerHTML = signInParent.innerHTML + ' to get access to unlimited stories';
+}
+
+function clearSigninMessage() {
+  let signinParent = document.getElementById('signinMessage');
+  signinParent.innerHTML = '';
 }
 
 const insertArticleRow = (articleHTML) => {
