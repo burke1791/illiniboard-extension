@@ -1,11 +1,16 @@
 updateLastVisit();
-updateFreeArticleCount();
-updateArticleReadStatus();
 
 // in case some resources are slow to load, this should catch them
 document.onreadystatechange = function () {
   if (document.readyState === 'complete') {
+    mainUpdate();
+  }
+}
+
+function mainUpdate() {
+  if (window.location.pathname.includes('story/')) {
     updateFreeArticleCount();
+    updateArticleReadStatus();
   }
 }
 
@@ -24,8 +29,14 @@ function updateFreeArticleCount() {
     let freeCount = Number(counter.item(0).textContent);
 
     chrome.storage.sync.set({
-      'freeCount': freeCount
+      'freeCount': freeCount,
+      'subscription': false
     });
+  } else {
+    chrome.storage.sync.set({
+      'freeCount': -1,
+      'subscription': true
+    })
   }
 }
 
