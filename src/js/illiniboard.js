@@ -184,12 +184,13 @@ function clearUnreadList() {
 
       chrome.storage.sync.set({[link]: article}, () => {
         updateRecentArticlesNode();
+        updateUnreadCount();
       });
     }
   });
 }
 
-const notInterested = (e) => {
+function notInterested(e) {
   let link = e.target.getAttribute('data-article');
 
   chrome.storage.sync.get(link, article => {
@@ -198,8 +199,47 @@ const notInterested = (e) => {
 
     chrome.storage.sync.set(article, () => {
       updateRecentArticlesNode();
+      updateUnreadCount();
     });
   });
+}
+
+function updateUnreadCount() {
+  let unreadCount = 0;
+
+  chrome.storage.sync.get(null, items => {
+    let lastView = items['lastView'];
+
+    if (lastView != null) {
+      let lastViewDate = new Date(lastView);
+
+      for (key in items) {
+        let article = items[key];
+  
+        // if object is an article object
+        if (article.pubDate != null) {
+          let articlePubDate = new Date(article.pubDate);
+
+          if (!article.viewed && articlePubDate > lastViewDate) {
+            unreadCount++;
+          }
+        }
+      }
+
+      updateBadgeWithUnreadCount(unreadCount);
+    }
+  });
+}
+
+function updateBadgeWithUnreadCount(unreadCount) {
+  console.log(unreadCount);
+  if (unreadCount > 9) {
+    chrome.browserAction.setBadgeText({text: '9+'});
+  } else if (unreadCount > 0) {
+    chrome.browserAction.setBadgeText({text: String(unreadCount)});
+  } else {
+    chrome.browserAction.setBadgeText({text: ''});
+  }
 }
 
 function reportBug() {
