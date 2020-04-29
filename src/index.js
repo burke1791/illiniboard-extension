@@ -223,12 +223,15 @@ function clearUnreadList() {
   getStorage(null).then(items => {
     for (var link in items) {
       let article = items[link];
-      article.viewed = true;
 
-      setStorage({[link]: article}).then(() => {
-        updateRecentArticlesNode();
-        updateUnreadCount();
-      });
+      if (!article.viewed) {
+        article.viewed = true;
+
+        setStorage({[link]: article}).then(() => {
+          updateRecentArticlesNode();
+          updateUnreadCount();
+        });
+      }
     }
   });
 }
