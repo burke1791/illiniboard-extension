@@ -1,3 +1,6 @@
+const { updateBadgeWithUnreadCount } = require('./badge.js');
+const { getStorage, setStorage } = require('./storage');
+
 let articles = [];
 
 registerEventListeners();
@@ -12,7 +15,7 @@ function updateRecentArticlesNode() {
 
   articles = [];
   
-  chrome.storage.sync.get(null, items => {
+  getStorage(null).then(items => {
     for (link in items) {
       if (items[link].pubDate != null) {
         let date = new Date(items[link].pubDate);
@@ -33,7 +36,7 @@ function updateFreeArticlesNode() {
 
   emptyDOMNode(freeArticles);
 
-  chrome.storage.sync.get(['lastView', 'freeCount', 'subscription'], items => {
+  getStorage(['lastView', 'freeCount', 'subscription'].then(items => {
     let subscription = items['subscription'];
 
     if (subscription) {
@@ -217,12 +220,12 @@ function registerEventListeners() {
 }
 
 function clearUnreadList() {
-  chrome.storage.sync.get(null, items => {
+  getStorage(null).then(items => {
     for (var link in items) {
       let article = items[link];
       article.viewed = true;
 
-      chrome.storage.sync.set({[link]: article}, () => {
+      setStorage({[link]: article}).then(() => {
         updateRecentArticlesNode();
         updateUnreadCount();
       });
@@ -233,11 +236,11 @@ function clearUnreadList() {
 function notInterested(e) {
   let link = e.target.getAttribute('data-article');
 
-  chrome.storage.sync.get(link, article => {
+  getStorage(link).then(article => {
     let keys = Object.keys(article);
     article[keys[0]].viewed = true;
 
-    chrome.storage.sync.set(article, () => {
+    setStorage(article).then(() => {
       updateRecentArticlesNode();
       updateUnreadCount();
     });
@@ -247,7 +250,7 @@ function notInterested(e) {
 function updateUnreadCount() {
   let unreadCount = 0;
 
-  chrome.storage.sync.get(null, items => {
+  getStorage(null).then(items => {
     let lastView = items['lastView'];
 
     if (lastView != null) {
@@ -269,17 +272,6 @@ function updateUnreadCount() {
       updateBadgeWithUnreadCount(unreadCount);
     }
   });
-}
-
-function updateBadgeWithUnreadCount(unreadCount) {
-  console.log(unreadCount);
-  if (unreadCount > 9) {
-    chrome.browserAction.setBadgeText({text: '9+'});
-  } else if (unreadCount > 0) {
-    chrome.browserAction.setBadgeText({text: String(unreadCount)});
-  } else {
-    chrome.browserAction.setBadgeText({text: ''});
-  }
 }
 
 function reportBug() {

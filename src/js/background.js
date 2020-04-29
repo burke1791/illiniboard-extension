@@ -1,3 +1,6 @@
+const { updateBadgeWithUnreadCount } = require('./badge.js');
+const { setStorage } = require('./storage');
+
 let articles = [];
 
 chrome.runtime.onInstalled.addListener(options => {
@@ -108,13 +111,7 @@ function updateBadge() {
     let lastView = item.lastView != null ? new Date(item['lastView']) : new Date();
 
     getUnreadCount(lastView).then(unreadCount => {
-      if (unreadCount > 9) {
-        chrome.browserAction.setBadgeText({text: '9+'});
-      } else if (unreadCount > 0) {
-        chrome.browserAction.setBadgeText({text: String(unreadCount)});
-      } else {
-        chrome.browserAction.setBadgeText({text: ''});
-      }
+      updateBadgeWithUnreadCount(unreadCount);
     });
   });
 }
@@ -141,6 +138,5 @@ function getUnreadCount(lastView) {
 
 function setLatestPollDate() {
   let pollDate = new Date().toLocaleString();
-
-  chrome.storage.sync.set({'lastPoll': pollDate});
+  setStorage({'lastPoll': pollDate});
 }

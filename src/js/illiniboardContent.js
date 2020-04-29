@@ -1,3 +1,5 @@
+const { setStorage, getStorage } = require('./storage');
+
 updateLastVisit();
 
 // in case some resources are slow to load, this should catch them
@@ -16,10 +18,7 @@ function mainUpdate() {
 
 function updateLastVisit() {
   let now = new Date().toISOString();
-
-  chrome.storage.sync.set({
-    'lastView': now
-  });
+  setStorage({'lastView': now});
 }
 
 function updateFreeArticleCount() {
@@ -28,12 +27,12 @@ function updateFreeArticleCount() {
   if (counter.length == 1) {
     let freeCount = Number(counter.item(0).textContent);
 
-    chrome.storage.sync.set({
+    setStorage({
       'freeCount': freeCount,
       'subscription': false
     });
   } else {
-    chrome.storage.sync.set({
+    setStorage({
       'freeCount': -1,
       'subscription': true
     })
@@ -45,10 +44,10 @@ function updateArticleReadStatus() {
 
   url = removeTrailingSlash(url);
   
-  chrome.storage.sync.get(url, article => {
+  getStorage(url).then(article => {
     let keys = Object.keys(article);
     article[keys[0]].viewed = true;
-    chrome.storage.sync.set(article);
+    setStorage(article);
   });
 }
 
