@@ -36,7 +36,7 @@ function updateFreeArticlesNode() {
 
   emptyDOMNode(freeArticles);
 
-  getStorage(['lastView', 'freeCount', 'subscription'].then(items => {
+  getStorage(['lastView', 'freeCount', 'subscription']).then(items => {
     let subscription = items['subscription'];
 
     if (subscription) {
