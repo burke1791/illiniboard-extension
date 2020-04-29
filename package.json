@@ -1,0 +1,25 @@
+{
+  "name": "illiniboard-extension",
+  "version": "0.2.0",
+  "description": "An extension for Chrome or Brave web browsers that keeps you up to date on new articles posted to illiniboard.com",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/burke1791/illiniboard-extension.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/burke1791/illiniboard-extension/issues"
+  },
+  "homepage": "https://github.com/burke1791/illiniboard-extension#readme",
+  "devDependencies": {
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
+  }
+}

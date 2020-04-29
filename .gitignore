@@ -1,3 +1,6 @@
 build/
+screenshots/
 
 *.zip
+
+node_modules?
