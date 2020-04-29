@@ -1,6 +1,5 @@
 
 const updateBadgeWithUnreadCount = function(unreadCount) {
-  console.log(unreadCount);
   if (unreadCount > 9) {
     chrome.browserAction.setBadgeText({text: '9+'});
   } else if (unreadCount > 0) {
