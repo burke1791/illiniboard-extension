@@ -1,12 +1,25 @@
 
-const updateBadgeWithUnreadCount = function(unreadCount) {
+const getUnreadCountBadgeText = function(unreadCount) {
+  let badgeText = '';
+
   if (unreadCount > 9) {
-    chrome.browserAction.setBadgeText({text: '9+'});
+    badgeText = '9+'
   } else if (unreadCount > 0) {
-    chrome.browserAction.setBadgeText({text: String(unreadCount)});
-  } else {
-    chrome.browserAction.setBadgeText({text: ''});
+    badgeText = String(unreadCount);
   }
+
+  return badgeText;
 }
 
-exports.updateBadgeWithUnreadCount = updateBadgeWithUnreadCount;
+const updateBadgeText = (text) => {
+  chrome.browserAction.setBadgeText({text: text});
+}
+
+const updateBadgeTextWithUnreadCount = (unreadCount) => {
+  let badgeText = getUnreadCountBadgeText(unreadCount);
+  updateBadgeText(badgeText);
+}
+
+export {
+  updateBadgeTextWithUnreadCount
+};

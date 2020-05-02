@@ -10,11 +10,12 @@ const setStorage = function(obj) {
 const getStorage = function(key) {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(key, (result) => {
-      console.log(result);
       resolve(result);
     });
   });
 }
 
-exports.setStorage = setStorage;
-exports.getStorage = getStorage;
+export {
+  getStorage,
+  setStorage
+};

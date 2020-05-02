@@ -1,5 +1,6 @@
-const { updateBadgeWithUnreadCount } = require('./badge.js');
-const { getStorage, setStorage } = require('./storage');
+import { getUnreadArticleCount } from './utilities';
+import { updateBadgeTextWithUnreadCount } from './badge';
+import { getStorage, setStorage } from './storage';
 
 let articles = [];
 
@@ -16,7 +17,7 @@ function updateRecentArticlesNode() {
   articles = [];
   
   getStorage(null).then(items => {
-    for (link in items) {
+    for (var link in items) {
       if (items[link].pubDate != null) {
         let date = new Date(items[link].pubDate);
         items[link].pubDate = date;
@@ -224,7 +225,7 @@ function clearUnreadList() {
     for (var link in items) {
       let article = items[link];
 
-      if (!article.viewed) {
+      if (article.pubDate != null && !article.viewed) {
         article.viewed = true;
 
         setStorage({[link]: article}).then(() => {
@@ -259,20 +260,9 @@ function updateUnreadCount() {
     if (lastView != null) {
       let lastViewDate = new Date(lastView);
 
-      for (key in items) {
-        let article = items[key];
-  
-        // if object is an article object
-        if (article.pubDate != null) {
-          let articlePubDate = new Date(article.pubDate);
+      unreadCount = getUnreadArticleCount(items, lastViewDate);
 
-          if (!article.viewed && articlePubDate > lastViewDate) {
-            unreadCount++;
-          }
-        }
-      }
-
-      updateBadgeWithUnreadCount(unreadCount);
+      updateBadgeTextWithUnreadCount(unreadCount);
     }
   });
 }

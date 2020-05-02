@@ -1,12 +1,13 @@
-const { updateBadgeWithUnreadCount } = require('./badge.js');
-const { setStorage } = require('./storage');
+import { updateBadgeTextWithUnreadCount } from './badge.js';
+import { setStorage, getStorage } from './storage';
+import { getUnreadArticleCount } from './utilities';
 
 let articles = [];
 
 chrome.runtime.onInstalled.addListener(options => {
   if (options.reason == 'install') {
     let installDate = new Date();
-    chrome.storage.sync.set({'installDate': installDate.toLocaleString()});
+    setStorage({'installDate': installDate.toLocaleString()});
   }
 
   requestIlliniboardRSS(true);
@@ -23,7 +24,7 @@ requestIlliniboardRSS(false);
 
 function requestIlliniboardRSS(forceReq) {
   // only hit the RSS feed if it's been 5 minutes since the last poll
-  chrome.storage.sync.get('lastPoll', items => {
+  getStorage('lastPoll').then(items => {
     let lastPoll = new Date(items['lastPoll']);
     let now = new Date();
 
@@ -66,8 +67,8 @@ function handleXML() {
 function populateArticleObj(article, item) {
   for (var i = 0; i < item.childElementCount; i++) {
     let node = item.children[i];
-    // title
 
+    // title
     if (node.nodeName.toLowerCase() == 'title') {
       article.title = node.textContent;
     }
@@ -91,9 +92,9 @@ function populateArticleObj(article, item) {
 
 function saveArticlesInStorage(article) {
   // only set it in storage if it doesn't already exist
-  chrome.storage.sync.get(article.link, item => {
+  getStorage(article.link).then(item => {
     if (Object.keys(item).length == 0) {
-      chrome.storage.sync.set({
+      setStorage({
         [article.link]: {
           "title": article.title,
           "pubDate": article.pubDate,
@@ -106,37 +107,22 @@ function saveArticlesInStorage(article) {
 }
 
 function updateBadge() {
-  chrome.storage.sync.get('lastView', item => {
-    // set lastView to the unix epoch if it doesn't exist
-    let lastView = item.lastView != null ? new Date(item['lastView']) : new Date();
+  let unreadCount = 0;
 
-    getUnreadCount(lastView).then(unreadCount => {
-      updateBadgeWithUnreadCount(unreadCount);
-    });
-  });
-}
+  getStorage(null).then(items => {
+    let lastView = items['lastView'];
 
-function getUnreadCount(lastView) {
-  let count = 0;
+    if (lastView != null) {
+      let lastViewDate = new Date(lastView);
 
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(null, articles => {
-      for (var link in articles) {
-        if (articles[link].pubDate != null) {
-          let pubDate = new Date(articles[link].pubDate);
-      
-          if (pubDate > lastView && !articles[link].viewed) {
-            count++;
-          }
-        }
-      }
+      unreadCount = getUnreadArticleCount(items, lastViewDate);
 
-      resolve(count);
-    });
+      updateBadgeTextWithUnreadCount(unreadCount);
+    }
   });
 }
 
 function setLatestPollDate() {
   let pollDate = new Date().toLocaleString();
-  setStorage({'lastPoll': pollDate});
+  setStorage({ 'lastPoll': pollDate });
 }
