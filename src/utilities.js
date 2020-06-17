@@ -12,7 +12,7 @@ const getUnreadArticleCount = (articles, lastViewDate) => {
       unreadCount ++;
     }
   }
-  console.log(unreadCount);
+
   return unreadCount;
 }
 
