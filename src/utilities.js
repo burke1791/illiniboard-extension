@@ -5,17 +5,14 @@ const getUnreadArticleCount = (articles, lastViewDate) => {
   for (var key in articles) {
     let article = articles[key];
 
-    // if object is an article object
-    if (article.pubDate != null) {
-      let articlePubDate = new Date(article.pubDate);
+    let articlePubDate = article.pubDate != null ? new Date(article.pubDate) : false;
 
-      // if the article was published after the user's last visit
-      if (!article.viewed && articlePubDate > lastViewDate) {
-        unreadCount++;
-      }
+    // increment the unread count if the current article hasn't been viewed
+    if (articlePubDate && !article.viewed && articlePubDate > lastViewDate) {
+      unreadCount ++;
     }
   }
-
+  console.log(unreadCount);
   return unreadCount;
 }
 

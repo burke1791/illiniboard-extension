@@ -4,7 +4,7 @@
   "description": "An extension for Chrome or Brave web browsers that keeps you up to date on new articles posted to illiniboard.com",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "webpack --config webpack.config.js"
   },
   "repository": {
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/burke1791/illiniboard-extension#readme",
   "devDependencies": {
+    "jest": "^26.0.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11"
   }
