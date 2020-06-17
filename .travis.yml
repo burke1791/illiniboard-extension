@@ -9,6 +9,10 @@ branches:
     - master
     - develop
 
+env:
+  global:
+    - CC_TEST_REPORTER_ID: 7f765bf7a9dad8e5c7ebd6ded9d2e16585c08963d622c9aed16cf362d2d9da29
+
 addons:
   chrome: stable
 before_script:
