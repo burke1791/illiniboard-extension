@@ -4,7 +4,7 @@
   "description": "An extension for Chrome or Brave web browsers that keeps you up to date on new articles posted to illiniboard.com",
   "private": true,
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "build": "webpack --config webpack.config.js"
   },
   "repository": {
