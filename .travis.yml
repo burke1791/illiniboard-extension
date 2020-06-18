@@ -9,6 +9,10 @@ branches:
     - master
     - develop
 
+cache:
+  directories:
+    - node_modules
+
 env:
   global:
     - CC_TEST_REPORTER_ID: 7f765bf7a9dad8e5c7ebd6ded9d2e16585c08963d622c9aed16cf362d2d9da29
@@ -16,7 +20,6 @@ env:
 addons:
   chrome: stable
 before_script:
-  - npm i -g nyc
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
