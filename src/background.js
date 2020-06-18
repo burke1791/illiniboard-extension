@@ -1,6 +1,7 @@
 import { updateBadgeTextWithUnreadCount } from './badge.js';
 import { setStorage, getStorage } from './storage';
 import { getUnreadArticleCount } from './utilities';
+import { generateArticleObj } from './article.js';
 
 let articles = [];
 
@@ -54,39 +55,12 @@ function handleXML() {
     let items = ibXML.getElementsByTagName('item');
 
     for (var i = 0; i < items.length; i++) {
-      let article = {};
-      populateArticleObj(article, items[i]);
+      let article = generateArticleObj(items[i]);
       articles.push(article);
       saveArticlesInStorage(article);
     }
 
     updateBadge();
-  }
-}
-
-function populateArticleObj(article, item) {
-  for (var i = 0; i < item.childElementCount; i++) {
-    let node = item.children[i];
-
-    // title
-    if (node.nodeName.toLowerCase() == 'title') {
-      article.title = node.textContent;
-    }
-
-    // link
-    if (node.nodeName.toLowerCase() == 'link') {
-      article.link = node.textContent;
-    }
-
-    // description
-    if (node.nodeName.toLowerCase() == 'description') {
-      article.description = node.textContent;
-    }
-
-    // pubDate
-    if (node.nodeName.toLowerCase() == 'pubdate') {
-      article.pubDate = node.textContent;
-    }
   }
 }
 
