@@ -37,6 +37,31 @@ function ArticleMetaData(props) {
     let meta = document.createElement('div');
     meta.setAttribute('class', 'left');
 
+    let title = new ArticleTitle({ title: this.title, url: this.url });
+    
+    meta.appendChild(title);
+
+    let pubDate = document.createElement('div');
+    pubDate.setAttribute('class', 'pubdate');
+
+    let timestamp = document.createElement('span');
+    timestamp.textContent = this.timestamp.toLocaleString();
+
+    pubDate.appendChild(timestamp);
+    meta.appendChild(pubDate);
+
+    return meta;
+  }
+
+  return this.render();
+}
+
+function ArticleTitle(props) {
+  this.title = props.title;
+  this.url = props.url;
+  this.render = render.bind(this);
+
+  function render() {
     let title = document.createElement('div');
     title.setAttribute('class', 'title');
 
@@ -50,18 +75,8 @@ function ArticleMetaData(props) {
 
     link.appendChild(titleText);
     title.appendChild(link);
-    meta.appendChild(title);
 
-    let pubDate = document.createElement('div');
-    pubDate.setAttribute('class', 'pubdate');
-
-    let timestamp = document.createElement('span');
-    timestamp.textContent = this.timestamp.toLocaleString();
-
-    pubDate.appendChild(timestamp);
-    meta.appendChild(pubDate);
-
-    return meta;
+    return title;
   }
 
   return this.render();
