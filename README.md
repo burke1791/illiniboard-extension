@@ -1,5 +1,6 @@
 # Illiniboard Browser Extension
 
+[![Build Status](https://travis-ci.com/burke1791/illiniboard-extension.svg?branch=master)](https://travis-ci.com/burke1791/illiniboard-extension)
 [![Maintainability](https://api.codeclimate.com/v1/badges/8823c3a01729b049cf38/maintainability)](https://codeclimate.com/github/burke1791/illiniboard-extension/maintainability)
 
 An extension for [Chrome](https://www.google.com/chrome/) and [Brave](https://brave.com/) web browsers that keeps you up to date on new articles posted to illiniboard.com
