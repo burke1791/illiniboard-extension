@@ -39,7 +39,7 @@ function requestIlliniboardRSS(forceReq) {
       req.send();
     } else {
       // update badge in case article read booleans unexpectedly changed
-      updateBadge();
+      updateBadgeTextWithUnreadCount();
     }
   });
 }
@@ -60,7 +60,7 @@ function handleXML() {
       saveArticlesInStorage(article);
     }
 
-    updateBadge();
+    updateBadgeTextWithUnreadCount();
   }
 }
 
@@ -76,22 +76,6 @@ function saveArticlesInStorage(article) {
           "viewed": false
         }
       });
-    }
-  });
-}
-
-function updateBadge() {
-  let unreadCount = 0;
-
-  getStorage(null).then(items => {
-    let lastView = items['lastView'];
-
-    if (lastView != null) {
-      let lastViewDate = new Date(lastView);
-
-      unreadCount = getUnreadArticleCount(items, lastViewDate);
-
-      updateBadgeTextWithUnreadCount(unreadCount);
     }
   });
 }

@@ -1,5 +1,7 @@
 
-const getUnreadCountBadgeText = function(unreadCount) {
+import { getStorage } from './storage';
+
+const getUnreadCountBadgeText = (unreadCount) => {
   let badgeText = '';
 
   if (unreadCount > 9) {
@@ -15,11 +17,23 @@ const updateBadgeText = (text) => {
   chrome.browserAction.setBadgeText({text: text});
 }
 
-const updateBadgeTextWithUnreadCount = (unreadCount) => {
-  let badgeText = getUnreadCountBadgeText(unreadCount);
-  updateBadgeText(badgeText);
+const updateBadgeTextWithUnreadCount = () => {
+  let unreadCount = 0;
+
+  getStorage(null).then(items => {
+    let lastView = items['lastView'];
+
+    if (lastView != null) {
+      let lastViewDate = new Date(lastView);
+
+      unreadCount = getUnreadArticleCount(items, lastViewDate);
+
+      updateBadgeText(getUnreadCountBadgeText(unreadCount));
+    }
+  });
 }
 
 export {
-  updateBadgeTextWithUnreadCount
+  updateBadgeTextWithUnreadCount,
+  getUnreadCountBadgeText
 };

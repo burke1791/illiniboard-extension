@@ -230,7 +230,7 @@ function clearUnreadList() {
 
         setStorage({[link]: article}).then(() => {
           updateRecentArticlesNode();
-          updateUnreadCount();
+          updateBadgeTextWithUnreadCount();
         });
       }
     }
@@ -246,24 +246,8 @@ function notInterested(e) {
 
     setStorage(article).then(() => {
       updateRecentArticlesNode();
-      updateUnreadCount();
+      updateBadgeTextWithUnreadCount();
     });
-  });
-}
-
-function updateUnreadCount() {
-  let unreadCount = 0;
-
-  getStorage(null).then(items => {
-    let lastView = items['lastView'];
-
-    if (lastView != null) {
-      let lastViewDate = new Date(lastView);
-
-      unreadCount = getUnreadArticleCount(items, lastViewDate);
-
-      updateBadgeTextWithUnreadCount(unreadCount);
-    }
   });
 }
 
