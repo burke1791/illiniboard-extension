@@ -1,11 +1,12 @@
 import { generateArticleObj, extractArticleProperty } from '../src/article';
-import { validArticleNode } from '../mocks/articles';
+import { validArticleXmlNode, validArticleComponent } from '../mocks/articles';
+import Article from '../src/components/article';
 
 let parser = new DOMParser()
 
 describe('article xml parsing', () => {
   test('correctly parses a valid xml node', () => {
-    let validXml = parser.parseFromString(validArticleNode, 'text/xml');
+    let validXml = parser.parseFromString(validArticleXmlNode, 'text/xml');
   
     let actualTitle = extractArticleProperty(validXml, 'title');
     let expectedTitle = 'Valid Article Title';
@@ -29,7 +30,7 @@ describe('article xml parsing', () => {
   });
   
   test('correctly generates article object from valid xml node', () => {
-    let validXml = parser.parseFromString(validArticleNode, 'text/xml');
+    let validXml = parser.parseFromString(validArticleXmlNode, 'text/xml');
   
     let actualArticle = generateArticleObj(validXml);
     let expectedArticle = {
@@ -40,5 +41,20 @@ describe('article xml parsing', () => {
     };
   
     expect(actualArticle).toEqual(expectedArticle);
+  });
+});
+
+describe('article components', () => {
+  test('correctly component from valid inputs', () => {
+    let articleProps = {
+      url: 'https://testlink.dev',
+      title: 'Valid Article Title',
+      timestamp: new Date('Wed, 17 Jun 2020 19:35:48 -0500'),
+      clickListener: () => { return null }
+    }
+
+    let actualComponent = new Article(articleProps);
+
+    expect(actualComponent.outerHTML).toBe(validArticleComponent);
   });
 });

@@ -9,6 +9,7 @@ function Article(props) {
     url: props.url,
     clickListener: props.interestClickListener
   };
+  this.render = render.bind(this);
 
   function render() {
     let article = document.createElement('div');
@@ -23,13 +24,14 @@ function Article(props) {
     return article;
   }
 
-  return render();
+  return this.render();
 }
 
 function ArticleMetaData(props) {
   this.url = props.url;
   this.title = props.title;
   this.timestamp = props.timestamp;
+  this.render = render.bind(this);
 
   function render() {
     let meta = document.createElement('div');
@@ -62,12 +64,13 @@ function ArticleMetaData(props) {
     return meta;
   }
 
-  return render();
+  return this.render();
 }
 
 function ArticleInterest(props) {
   this.url = props.url;
   this.clickListener = props.clickListener;
+  this.render = render.bind(this);
 
   function render() {
     let interestDisplay = document.createElement('div');
@@ -89,7 +92,7 @@ function ArticleInterest(props) {
     return interestDisplay;
   }
 
-  return render();
+  return this.render();
 }
 
 export default Article;

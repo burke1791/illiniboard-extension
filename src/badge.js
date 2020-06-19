@@ -1,5 +1,6 @@
 
 import { getStorage } from './storage';
+import { getUnreadArticleCount } from './utilities';
 
 const getUnreadCountBadgeText = (unreadCount) => {
   let badgeText = '';
