@@ -1,3 +1,5 @@
+import { getStorage, setStorage } from "../storage";
+import { updateBadgeTextWithUnreadCount } from '../badge';
 
 function Article(props) {
   this.articleMetaData = {

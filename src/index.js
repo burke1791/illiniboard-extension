@@ -93,7 +93,7 @@ const generateArticleHTML = (articleObj) => {
     url: articleObj.url,
     title: articleObj.title,
     timestamp: articleObj.pubDate,
-    clickListener: notInterested
+    interestClickListener: notInterested
   };
 
   let articleDiv = new Article(props);
