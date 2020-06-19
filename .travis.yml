@@ -13,10 +13,6 @@ cache:
   directories:
     - node_modules
 
-env:
-  global:
-    - CC_TEST_REPORTER_ID: 7f765bf7a9dad8e5c7ebd6ded9d2e16585c08963d622c9aed16cf362d2d9da29
-
 addons:
   chrome: stable
 before_script:
@@ -29,4 +25,4 @@ script:
   - npm run test
 
 after_script:
-  - ./cc-test-reporter after-build --debug --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT

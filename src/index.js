@@ -1,6 +1,7 @@
-import { getUnreadArticleCount } from './utilities';
+
 import { updateBadgeTextWithUnreadCount } from './badge';
 import { getStorage, setStorage } from './storage';
+import Article from './components/article';
 
 let articles = [];
 
@@ -88,53 +89,16 @@ const addArticlesToDOM = () => {
 }
 
 const generateArticleHTML = (articleObj) => {
-  let div = document.createElement('div');
-  div.setAttribute('class', 'article');
+  let props = {
+    url: articleObj.url,
+    title: articleObj.title,
+    timestamp: articleObj.pubDate,
+    clickListener: notInterested
+  };
 
-  let left = document.createElement('div');
-  left.setAttribute('class', 'left');
+  let articleDiv = new Article(props);
 
-  let right = document.createElement('div');
-  right.setAttribute('class', 'right');
-
-  let title = document.createElement('div');
-  title.setAttribute('class', 'title');
-
-  let link = document.createElement('a');
-  link.setAttribute('href', articleObj.url);
-  link.setAttribute('target', '_blank');
-
-  let titleText = document.createElement('h4');
-  titleText.setAttribute('class', 'article-title');
-  titleText.textContent = articleObj.title;
-
-  link.appendChild(titleText);
-  title.appendChild(link);
-  left.appendChild(title);
-
-  let pubDate = document.createElement('div');
-  pubDate.setAttribute('class', 'pubdate');
-  let timestamp = document.createElement('span');
-  timestamp.textContent = articleObj.pubDate.toLocaleString();
-
-  pubDate.appendChild(timestamp);
-  left.appendChild(pubDate);
-
-  let interest = document.createElement('div');
-  interest.setAttribute('class', 'interest');
-  let interestBtn = document.createElement('button');
-  interestBtn.setAttribute('class', 'interest-btn');
-  interestBtn.setAttribute('data-article', articleObj.url);
-  interestBtn.textContent = 'Not Interested?';
-  interestBtn.addEventListener('click', notInterested)
-
-  interest.appendChild(interestBtn);
-  right.appendChild(interest);
-
-  div.appendChild(left);
-  div.appendChild(right);
-
-  return div;
+  return articleDiv;
 }
 
 const generateFreeArticlesHTML = (freeCount) => {
@@ -230,7 +194,7 @@ function clearUnreadList() {
 
         setStorage({[link]: article}).then(() => {
           updateRecentArticlesNode();
-          updateUnreadCount();
+          updateBadgeTextWithUnreadCount();
         });
       }
     }
@@ -246,24 +210,8 @@ function notInterested(e) {
 
     setStorage(article).then(() => {
       updateRecentArticlesNode();
-      updateUnreadCount();
+      updateBadgeTextWithUnreadCount();
     });
-  });
-}
-
-function updateUnreadCount() {
-  let unreadCount = 0;
-
-  getStorage(null).then(items => {
-    let lastView = items['lastView'];
-
-    if (lastView != null) {
-      let lastViewDate = new Date(lastView);
-
-      unreadCount = getUnreadArticleCount(items, lastViewDate);
-
-      updateBadgeTextWithUnreadCount(unreadCount);
-    }
   });
 }
 

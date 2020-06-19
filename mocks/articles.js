@@ -1,7 +1,3 @@
-export const validArticleNode = `<item>
-  <title>Valid Article Title</title>
-  <link>https://testlink.dev</link>
-  <description>Valid Article Description</description>
-  <guid isPermaLink="false">https://testlink.dev</guid>
-  <pubDate>Wed, 17 Jun 2020 19:35:48 -0500</pubDate>
-</item>`;
+export const validArticleXmlNode = `<item><title>Valid Article Title</title><link>https://testlink.dev</link><description>Valid Article Description</description><guid isPermaLink="false">https://testlink.dev</guid><pubDate>Wed, 17 Jun 2020 19:35:48 -0500</pubDate></item>`;
+
+export const validArticleComponent = `<div class="article"><div class="left"><div class="title"><a href="https://testlink.dev" target="_blank"><h4 class="article-title">Valid Article Title</h4></a></div><div class="pubdate"><span>6/17/2020, 7:35:48 PM</span></div></div><div class="right"><div class="interest"><button class="interest-btn" data-article="https://testlink.dev">Not Interested?</button></div></div></div>`;
