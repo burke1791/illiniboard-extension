@@ -1,6 +1,5 @@
 import { updateBadgeTextWithUnreadCount } from './badge.js';
 import { setStorage, getStorage } from './storage';
-import { getUnreadArticleCount } from './utilities';
 import { generateArticleObj } from './article.js';
 
 let articles = [];
@@ -8,7 +7,7 @@ let articles = [];
 chrome.runtime.onInstalled.addListener(options => {
   if (options.reason == 'install') {
     let installDate = new Date();
-    setStorage({'installDate': installDate.toLocaleString()});
+    setStorage({ 'installDate': installDate.toLocaleString() });
   }
 
   requestIlliniboardRSS(true);
@@ -24,7 +23,7 @@ req.addEventListener('load', handleXML);
 requestIlliniboardRSS(false);
 
 function requestIlliniboardRSS(forceReq) {
-  // only hit the RSS feed if it's been 5 minutes since the last poll
+  
   getStorage('lastPoll').then(items => {
     let lastPoll = new Date(items['lastPoll']);
     let now = new Date();
@@ -32,6 +31,7 @@ function requestIlliniboardRSS(forceReq) {
     let diff = Math.abs(now - lastPoll);
     let diffMin = Math.ceil(diff / 1000 / 60);
     
+    // only hit the RSS feed if it's been 5 minutes since the last poll or we're forcing it to
     if (diffMin > 5 || forceReq) {
       let ibRSS = 'https://illiniboard.com/static/rss/rss.xml'
 
