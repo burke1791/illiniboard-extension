@@ -1,4 +1,4 @@
-const { setStorage, getStorage } = require('./storage');
+import { setStorage, getStorage } from './utilities/storage';
 
 updateLastVisit();
 
