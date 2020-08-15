@@ -1,6 +1,6 @@
 
-import { getStorage } from './storage';
-import { getUnreadArticleCount } from './utilities';
+import { getStorage } from './utilities/storage';
+import { getUnreadArticleCount } from './utilities/helper';
 
 const getUnreadCountBadgeText = (unreadCount) => {
   let badgeText = '';
@@ -21,16 +21,10 @@ const updateBadgeText = (text) => {
 const updateBadgeTextWithUnreadCount = () => {
   let unreadCount = 0;
 
-  getStorage(null).then(items => {
-    let lastView = items['lastView'];
+  getStorage('articles').then(data => {
+    unreadCount = getUnreadArticleCount(data.articles);
 
-    if (lastView != null) {
-      let lastViewDate = new Date(lastView);
-
-      unreadCount = getUnreadArticleCount(items, lastViewDate);
-
-      updateBadgeText(getUnreadCountBadgeText(unreadCount));
-    }
+    updateBadgeText(getUnreadCountBadgeText(unreadCount));
   });
 }
 

@@ -1,9 +1,7 @@
-
+import { generateArticleData, setArticlesViewed } from './utilities/clientHelper';
 import { updateBadgeTextWithUnreadCount } from './badge';
-import { getStorage, setStorage } from './storage';
+import { getStorage, setStorage } from './utilities/storage';
 import Article from './components/article';
-
-let articles = [];
 
 registerEventListeners();
 
@@ -15,21 +13,24 @@ function updateRecentArticlesNode() {
 
   emptyDOMNode(recentArticles);
 
-  articles = [];
+  let articles = [];
   
-  getStorage(null).then(items => {
-    for (var link in items) {
-      if (items[link].pubDate != null) {
-        let date = new Date(items[link].pubDate);
-        items[link].pubDate = date;
-        items[link].url = link;
-        articles.push(items[link]);
+  getStorage('articles').then(data => {
+    for (var article of data.articles) {
+      if (!article.viewed) {
+        let articleData = generateArticleData(article);
+
+        articles.push(articleData);
       }
     }
   
-    // reorder articles in descending post order
-    articles.sort((a, b) => {return b.pubDate - a.pubDate});
-    addArticlesToDOM();
+    if (articles.length > 0) {
+      // reorder articles in descending post order
+      articles.sort((a, b) => {return b.pubDate - a.pubDate});
+      addArticlesToDOM(articles);
+    } else {
+      insertNoNewArticlesRow();
+    }
   });
 }
 
@@ -68,28 +69,26 @@ function updateFreeArticlesNode() {
   });
 }
 
-const addArticlesToDOM = () => {
+/**
+ * @function addArticlesToDOM - top level function that adds article elements to the DOM. If there aren't any new articles then it paints the default "No new articles" node
+ * @param {Array<object>} articles - array of articles that have not been viewed
+ */
+const addArticlesToDOM = (articles) => {
   let count = 0;
-  let newArticles = false;
 
   for (var article of articles) {
-    if (count <= 2 && !article.viewed) {
-      newArticles = true;
+    // do not add more than 3 articles at a time
+    if (count >= 3) return;
 
-      let articleHTML = generateArticleHTML(article);
-      insertArticleRow(articleHTML);
-
-      count++;
-    }
-  }
-
-  if (!newArticles) {
-    insertNoNewArticlesRow();
+    let articleHTML = generateArticleHTML(article);
+    insertArticleRow(articleHTML);
+    count++;
   }
 }
 
 const generateArticleHTML = (articleObj) => {
   let props = {
+    id: articleObj.articleId,
     url: articleObj.url,
     title: articleObj.title,
     timestamp: articleObj.pubDate,
@@ -185,30 +184,25 @@ function registerEventListeners() {
 }
 
 function clearUnreadList() {
-  getStorage(null).then(items => {
-    for (var link in items) {
-      let article = items[link];
+  getStorage('articles').then(data => {
+    let articles = setArticlesViewed(data.articles);
 
-      if (article.pubDate != null && !article.viewed) {
-        article.viewed = true;
-
-        setStorage({[link]: article}).then(() => {
-          updateRecentArticlesNode();
-          updateBadgeTextWithUnreadCount();
-        });
-      }
-    }
+    setStorage({ 'articles': articles }).then(() => {
+      updateRecentArticlesNode();
+      updateBadgeTextWithUnreadCount();
+    });
   });
 }
 
 function notInterested(e) {
-  let link = e.target.getAttribute('data-article');
+  let articleId = e.target.getAttribute('data-article-id');
 
-  getStorage(link).then(article => {
-    let keys = Object.keys(article);
-    article[keys[0]].viewed = true;
+  console.log(articleId);
 
-    setStorage(article).then(() => {
+  getStorage('articles').then(data => {
+    let articles = setArticlesViewed(data.articles, articleId);
+
+    setStorage({ 'articles': articles }).then(() => {
       updateRecentArticlesNode();
       updateBadgeTextWithUnreadCount();
     });
