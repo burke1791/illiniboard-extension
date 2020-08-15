@@ -49,16 +49,24 @@ function calculateDiff(time1, time2, unit) {
   }
 }
 
+/**
+ * @function generateQueryString - returns a query string to append on an Api call
+ * @param {object} params 
+ * @param {string} params.[key] - the key name is used as the querystring key and the value is the querystring value, e.g. { name: 'football' } will generate this querystring: '?name=football'
+ */
 export function generateQueryString(params) {
-  let keys = Object.keys(params);
-
   let queryString = '';
+  
+  // only generate query string if necessary
+  if (params !== undefined) {
+    let keys = Object.keys(params);
 
-  for (var i in keys) {
-    if (i == 0) {
-      queryString += `?${keys[i]}=${params[keys[i]]}`
-    } else {
-      queryString += `&${keys[i]}=${params[keys[i]]}`
+    for (var i in keys) {
+      if (i == 0) {
+        queryString += `?${keys[i]}=${params[keys[i]]}`
+      } else {
+        queryString += `&${keys[i]}=${params[keys[i]]}`
+      }
     }
   }
 

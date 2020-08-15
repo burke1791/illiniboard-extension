@@ -47,11 +47,17 @@ test('timeDiff should throw', () => {
   expect(() => { timeDiff(date1, date2, threshold) }).toThrow();
 });
 
-test('correctly generates URL query string', () => {
-  let params = {
-    param1: 'value1',
-    param2: 69
-  };
+describe('query string generation', () => {
+  test('correctly generates URL query string', () => {
+    let params = {
+      param1: 'value1',
+      param2: 69
+    };
+  
+    expect(generateQueryString(params)).toBe('?param1=value1&param2=69');
+  });
 
-  expect(generateQueryString(params)).toBe('?param1=value1&param2=69');
+  test('gracefully handles undefined', () => {
+    expect(generateQueryString()).toBe('');
+  });
 });

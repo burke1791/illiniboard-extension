@@ -15,5 +15,9 @@ export function apiGet(endpoint, URIParams) {
 
   console.log(queryString);
 
-  return fetch(BASE_URL + endpoint + queryString);
+  return new Promise((resolve) => {
+    fetch(BASE_URL + endpoint + queryString).then(response => {
+      resolve(response.json());
+    });
+  });
 }
