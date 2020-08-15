@@ -37,7 +37,7 @@ chrome.webNavigation.onCompleted.addListener(function() {
  */
 async function updateArticles() {
   try {
-    let extensionId = getStorage('extensionId');
+    let extensionId = await getStorage('extensionId');
     console.log('await')
     console.log(extensionId);
   } catch (error) {
