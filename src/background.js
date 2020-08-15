@@ -1,4 +1,4 @@
-import { updateBadgeTextWithUnreadCount } from './badge.js';
+import { updateBadgeTextWithUnreadCount } from './utilities/badge.js';
 import { setStorage, getStorage } from './utilities/storage';
 import { registerNewExtension } from './utilities/apiService';
 import { timeDiff } from './utilities/helper';
@@ -55,8 +55,6 @@ async function updateArticles() {
     updateBadgeTextWithUnreadCount();
   });
 }
-
-
 
 /**
  * @function checkRegistration

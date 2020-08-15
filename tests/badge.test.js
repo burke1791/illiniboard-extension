@@ -1,4 +1,28 @@
-import { getUnreadCountBadgeText } from '../src/badge';
+import { getUnreadCountBadgeText, updateBadgeTextWithUnreadCount } from '../src/utilities/badge';
+
+/**
+ * mocking chrome globals
+ */
+global.chrome = {
+  browserAction: {
+    setBadgeText: function(obj, callback) {
+      callback();
+    }
+  },
+  storage: {
+    sync: {
+      get: function(key, callback) {
+        let articles = [
+          { viewed: false },
+          { viewed: true },
+          {}
+        ];
+        
+        callback(articles);
+      }
+    }
+  }
+}
 
 describe('correctly translates integer input to badge text string', () => {
   test('negative number', () => {
@@ -23,5 +47,13 @@ describe('correctly translates integer input to badge text string', () => {
 
   test('invalid input', () => {
     expect(getUnreadCountBadgeText('dummy input')).toBe('');
+  });
+});
+
+describe('setting chrome badge text properly', () => {
+  test('passes correct value to set badge text', () => {
+    return updateBadgeTextWithUnreadCount().then(result => {
+      expect(result).toBe(true);
+    });
   });
 });

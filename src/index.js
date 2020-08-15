@@ -1,5 +1,5 @@
 import { generateArticleData, setArticlesViewed } from './utilities/clientHelper';
-import { updateBadgeTextWithUnreadCount } from './badge';
+import { updateBadgeTextWithUnreadCount } from './utilities/badge';
 import { getStorage, setStorage } from './utilities/storage';
 import Article from './components/article';
 
