@@ -29,10 +29,8 @@ const updateBadgeTextWithUnreadCount = () => {
   return new Promise((resolve, reject) => {
     getStorage('articles').then(data => {
       unreadCount = getUnreadArticleCount(data.articles);
-      console.log(unreadCount);
       return updateBadgeText(getUnreadCountBadgeText(unreadCount));
     }).then(result => {
-      console.log(result);
       resolve(result);
     });
   });

@@ -14,7 +14,7 @@ export async function fetchNewArticles(extensionId) {
     articleArr = JSON.parse(articleArr);
     return articleArr;
   } catch (error) {
-    console.log(error);
+    // articleArr is most likely not valid JSON, return an empty array
     return [];
   }
 }
