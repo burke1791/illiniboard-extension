@@ -1,3 +1,4 @@
+import { getStorage, setStorage } from "./storage";
 
 export function getUnreadArticleCount(articles) {
   let unreadCount = 0;
@@ -71,4 +72,56 @@ export function generateQueryString(params) {
   }
 
   return queryString;
+}
+
+/**
+ * @function generatePostBody - returns an object that will be sent as the API request's body
+ * @param {object} params 
+ */
+export function generatePostBody(params) {
+  let body = {};
+
+  // only generate the body if necessary
+  if (params !== undefined) {
+    let keys = Object.keys(params);
+
+    for (var i in keys) {
+      let keyName = keys[i];
+      body[keyName] = params[keyName];
+    }
+  }
+
+  console.log(body);
+  return body;
+}
+
+/**
+ * @function getLastPollDate - returns the timestamp when we last polled the server for data. If a timestamp does not exist then return false
+ */
+export function getLastPollDate() {
+  return new Promise((resolve, reject) => {
+    getStorage('lastPoll').then(data => {
+      if (data.lastPoll !== undefined) {
+        let pollDate = new Date(data.lastPoll);
+
+        resolve(pollDate);
+      }
+
+      resolve(false);
+    });
+  });
+}
+
+/**
+ * @function setLatestPollDate
+ * keeps track of the last time we pinged the server for new articles
+ */
+export function setLatestPollDate() {
+  let pollDate = new Date().toLocaleString();
+
+  return new Promise((resolve) => {
+    setStorage({ 'lastPoll': pollDate }).then(data => {
+      resolve(data.lastPoll);
+    });
+  });
 }

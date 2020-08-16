@@ -1,11 +1,9 @@
 import { updateBadgeTextWithUnreadCount } from './utilities/badge.js';
 import { getExtensionId, getNewExtensionId } from './utilities/auth';
-import { setStorage, getStorage } from './utilities/storage';
-import { registerNewExtension } from './utilities/apiService';
-import { timeDiff } from './utilities/helper';
-import { ENDPOINTS } from './utilities/constants.js';
-import { apiGet } from './utilities/apiService';
-import { fetchNewArticles } from './services/article/article.service.js';
+import { setStorage, clearStorage } from './utilities/storage';
+import { determinePollEligibility } from './utilities/apiService';
+import { getLastPollDate, setLatestPollDate } from './utilities/helper';
+import { fetchNewArticles, sendArticleViews, purgeViewedArticles, storeNewArticles } from './services/article/article.service.js';
 
 /**
  * @event onInstalled
@@ -43,132 +41,37 @@ async function updateArticles() {
     
     // get a new id from the server
     if (!extensionId) {
+      // we need to clear storage before getting a new extensionId because any existing data will be tied to an old Id
+      await clearStorage();
+
       extensionId = await getNewExtensionId();
     }
 
-    /**
-     * @todo send "viewed" article id's to the server, then delete them from chrome storage
-     */
+    let lastPoll = await getLastPollDate();
+    let pollFlag = determinePollEligibility(lastPoll);
 
-    // let articles = await fetchNewArticles(extensionId);
-    // console.log(articles);
+    // if we've never polled the server or it's been 5 minutes since the last poll
+    if (pollFlag) {
+      // send "viewed" articleIds to the server
+      let viewedArticles = await sendArticleViews(extensionId);
+      console.log(viewedArticles);
 
-    if (articles.length > 0) {
-      // update local article storage
+      /**
+       * @todo purge the confirmed "viewed" articles from local chrome storage
+       */
+      await purgeViewedArticles(viewedArticles);
+
+      // set poll date immediately in order to prevent duplicate calls
+      await setLatestPollDate();
+
+      let articles = await fetchNewArticles(extensionId);
+      console.log(articles);
+
+      await storeNewArticles(articles);
     }
+
+    await updateBadgeTextWithUnreadCount();
   } catch (error) {
     console.log(error);
   }
-
-  // checkNewArticles().then(response => {
-  //   return response.json();
-  // }).then(data => {
-  //   let articles = JSON.parse(data);
-  //   setArticleStorage(articles);
-  //   setLatestPollDate();
-  // }).catch(error => {
-  //   console.log(error);
-  //   updateBadgeTextWithUnreadCount();
-  // });
 }
-
-/**
- * @function checkRegistration
- * returns the guid assigned to this browser extension - if it doesn't exist, then we ask the server for a new one
- */
-// function checkRegistration() {
-//   return new Promise((resolve, reject) => {
-//     getStorage('extensionId').then(id => {
-//       if (Object.keys(id).length === 0 && id.constructor === Object) {
-//         return registerNewExtension();
-//       }
-//       return id;
-//     }).then(response => {
-//       if (response.extensionId !== undefined) return response;
-  
-//       return response.json();
-//     }).then(data => {
-//       let extensionId = typeof data === 'object' ? data.extensionId : JSON.parse(data).ExtensionGuid;
-//       return setStorage({ 'extensionId': extensionId });
-//     }).then(data => {
-//       resolve(data.extensionId);
-//     }).catch(error => {
-//       console.log(error);
-//       reject(error);
-//     });
-//   });
-// }
-
-/**
- * @function checkNewArticles
- * sends a request to the server asking for recent unread articles from this extension
- */
-// function checkNewArticles() {
-//   let extensionGuidPromise = checkRegistration();
-//   let lastPollPromise = getStorage('lastPoll');
-
-//   return new Promise((resolve, reject) => {
-//     Promise.all([extensionGuidPromise, lastPollPromise]).then(values => {
-//       let extensionGuid = values[0];
-//       let lastPollDate = new Date(values[1].lastPoll);
-//       let now = new Date();
-//       let threshold = {
-//         unit: 'minute',
-//         value: 5 // do not hit API if our previous check was less than 5 minutes ago
-//       }
-  
-//       if (values[1].lastPoll === undefined || timeDiff(lastPollDate, now, threshold)) {
-//         let endpoint = ENDPOINTS.CHECK_NEW_ARTICLES;
-//         let params = generateCheckArticleApiParams(extensionGuid);
-        
-//         resolve(apiGet(endpoint, params));
-//       } else {
-//         reject(false);
-//       }
-//     });
-//   });
-// }
-
-// function generateCheckArticleApiParams(extensionGuid) {
-//   let params = {};
-
-//   if (extensionGuid !== undefined) {
-//     params.extensionGuid = extensionGuid;
-//   }
-
-//   return params;
-// }
-
-// function setArticleStorage(articleArr) {
-//   let prevArticleId;
-//   let prevArticleDate = new Date();
-
-//   for (var article of articleArr) {
-//     // maintain the oldest articleId returned from the API
-//     let articleDate = new Date(article.PublishDate);
-
-//     // add viewed property to the object
-//     article.viewed = false;
-
-//     if (articleDate < prevArticleDate) {
-//       prevArticleId = article.ArticleId;
-//       prevArticleDate = articleDate;
-//     }
-//   }
-
-//   setStorage({ 'articles': articleArr }).then(() => {
-//     updateBadgeTextWithUnreadCount();
-//   }).catch(error => {
-//     console.log(error);
-//   });
-//   setStorage({ 'prevArticleId': prevArticleId });
-// }
-
-// /**
-//  * @function setLatestPollDate
-//  * keeps track of the last time we pinged the server for new articles
-//  */
-// function setLatestPollDate() {
-//   let pollDate = new Date().toLocaleString();
-//   setStorage({ 'lastPoll': pollDate });
-// }
