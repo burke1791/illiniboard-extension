@@ -1,86 +1,74 @@
-import { updateBadgeTextWithUnreadCount } from './badge.js';
-import { setStorage, getStorage } from './storage';
-import { generateArticleObj } from './article.js';
+import { updateBadgeTextWithUnreadCount } from './utilities/badge.js';
+import { getExtensionId, getNewExtensionId } from './utilities/auth';
+import { setStorage, clearStorage } from './utilities/storage';
+import { determinePollEligibility } from './utilities/apiService';
+import { getLastPollDate, setLatestPollDate } from './utilities/helper';
+import { fetchNewArticles, sendArticleViews, purgeViewedArticles, storeNewArticles } from './services/article/article.service.js';
 
-let articles = [];
-
+/**
+ * @event onInstalled
+ * @param options.reason {string} - reason for the event dispatch, can be one of:
+ *  - install
+ *  - update
+ *  - chrome_update
+ *  - shared_module_update
+ */
 chrome.runtime.onInstalled.addListener(options => {
   if (options.reason == 'install') {
     let installDate = new Date();
     setStorage({ 'installDate': installDate.toLocaleString() });
   }
 
-  requestIlliniboardRSS(true);
+  updateArticles();
 });
 
+/**
+ * @event onCompleted
+ * Event dispatched when the browser is finished loading a new page.
+ * Used to conditionally ping the server for new articles
+ */
 chrome.webNavigation.onCompleted.addListener(function() {
-  requestIlliniboardRSS(false);
+  updateArticles();
 });
 
-let req = new XMLHttpRequest();
-req.addEventListener('load', handleXML);
-
-requestIlliniboardRSS(false);
-
-function requestIlliniboardRSS(forceReq) {
-  
-  getStorage('lastPoll').then(items => {
-    let lastPoll = new Date(items['lastPoll']);
-    let now = new Date();
-
-    let diff = Math.abs(now - lastPoll);
-    let diffMin = Math.ceil(diff / 1000 / 60);
+/**
+ * @function updateArticles
+ * the main update loop for local article data
+ */
+async function updateArticles() {
+  try {
+    let extensionId = await getExtensionId('extensionId');
     
-    // only hit the RSS feed if it's been 5 minutes since the last poll or we're forcing it to
-    if (diffMin > 5 || forceReq) {
-      let ibRSS = 'https://illiniboard.com/static/rss/rss.xml'
+    // get a new id from the server
+    if (!extensionId) {
+      // we need to clear storage before getting a new extensionId because any existing data will be tied to an old Id
+      await clearStorage();
 
-      req.open('GET', ibRSS + ((/\?/).test(ibRSS) ? "&" : "?") + (new Date()).getTime());
-      req.send();
-    } else {
-      // update badge in case article read booleans unexpectedly changed
-      updateBadgeTextWithUnreadCount();
-    }
-  });
-}
-
-function handleXML() {
-  // log the updated pollDate
-  setLatestPollDate();
-
-  let ibXML = req.responseXML;
-  articles = [];
-
-  if (ibXML.hasChildNodes()) {
-    let items = ibXML.getElementsByTagName('item');
-
-    for (var i = 0; i < items.length; i++) {
-      let article = generateArticleObj(items[i]);
-      articles.push(article);
-      saveArticlesInStorage(article);
+      extensionId = await getNewExtensionId();
     }
 
-    updateBadgeTextWithUnreadCount();
+    let lastPoll = await getLastPollDate();
+    let pollFlag = determinePollEligibility(lastPoll);
+
+    // if we've never polled the server or it's been 5 minutes since the last poll
+    if (pollFlag) {
+      // send "viewed" articleIds to the server
+      let viewedArticles = await sendArticleViews(extensionId);
+      console.log(viewedArticles);
+
+      await purgeViewedArticles(viewedArticles);
+
+      // set poll date immediately in order to prevent duplicate calls
+      await setLatestPollDate();
+
+      let articles = await fetchNewArticles(extensionId);
+      console.log(articles);
+
+      await storeNewArticles(articles);
+    }
+
+    await updateBadgeTextWithUnreadCount();
+  } catch (error) {
+    console.log(error);
   }
-}
-
-function saveArticlesInStorage(article) {
-  // only set it in storage if it doesn't already exist
-  getStorage(article.link).then(item => {
-    if (Object.keys(item).length == 0) {
-      setStorage({
-        [article.link]: {
-          "title": article.title,
-          "pubDate": article.pubDate,
-          "description": article.description,
-          "viewed": false
-        }
-      });
-    }
-  });
-}
-
-function setLatestPollDate() {
-  let pollDate = new Date().toLocaleString();
-  setStorage({ 'lastPoll': pollDate });
 }

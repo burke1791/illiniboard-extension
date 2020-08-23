@@ -1,5 +1,3 @@
-import { getStorage, setStorage } from "../storage";
-import { updateBadgeTextWithUnreadCount } from '../badge';
 
 function Article(props) {
   this.articleMetaData = {
@@ -8,7 +6,7 @@ function Article(props) {
     timestamp: props.timestamp
   };
   this.articleInterest = {
-    url: props.url,
+    id: props.id,
     clickListener: props.interestClickListener
   };
   this.render = render.bind(this);
@@ -85,7 +83,7 @@ function ArticleTitle(props) {
 }
 
 function ArticleInterest(props) {
-  this.url = props.url;
+  this.id = props.id;
   this.clickListener = props.clickListener;
   this.render = render.bind(this);
 
@@ -98,7 +96,7 @@ function ArticleInterest(props) {
 
     let btn = document.createElement('button');
     btn.setAttribute('class', 'interest-btn');
-    btn.setAttribute('data-article', this.url);
+    btn.setAttribute('data-article-id', this.id);
     btn.textContent = 'Not Interested?';
 
     btn.addEventListener('click', this.clickListener);
