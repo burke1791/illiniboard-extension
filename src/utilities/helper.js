@@ -57,17 +57,17 @@ function calculateDiff(time1, time2, unit) {
  */
 export function generateQueryString(params) {
   let queryString = '';
-  
-  // only generate query string if necessary
-  if (params !== undefined) {
-    let keys = Object.keys(params);
 
-    for (var i in keys) {
-      if (i == 0) {
-        queryString += `?${keys[i]}=${params[keys[i]]}`
-      } else {
-        queryString += `&${keys[i]}=${params[keys[i]]}`
-      }
+  // only generate query string if necessary
+  if (params == undefined) return queryString;
+  
+  let keys = Object.keys(params);
+
+  for (var i in keys) {
+    if (i == 0) {
+      queryString += `?${keys[i]}=${params[keys[i]]}`
+    } else {
+      queryString += `&${keys[i]}=${params[keys[i]]}`
     }
   }
 
