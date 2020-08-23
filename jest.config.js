@@ -6,5 +6,8 @@ module.exports = {
     'src/**/*.js',
     '!src/utilities/constants.js'
   ],
-  verbose: true
+  verbose: true,
+  restoreMocks: true,
+  resetMocks: true,
+  clearMocks: true
 };

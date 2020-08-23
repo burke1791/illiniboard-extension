@@ -56,9 +56,6 @@ async function updateArticles() {
       let viewedArticles = await sendArticleViews(extensionId);
       console.log(viewedArticles);
 
-      /**
-       * @todo purge the confirmed "viewed" articles from local chrome storage
-       */
       await purgeViewedArticles(viewedArticles);
 
       // set poll date immediately in order to prevent duplicate calls

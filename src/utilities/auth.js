@@ -26,6 +26,9 @@ export function getNewExtensionId() {
       }
     }).then(data => {
       resolve(data.extensionId);
+    }).catch(error => {
+      // likely unable to parse the response
+      reject(error);
     });
   });
 }

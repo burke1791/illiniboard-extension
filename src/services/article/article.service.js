@@ -39,8 +39,6 @@ export async function sendArticleViews(extensionId) {
       }
     };
 
-    console.log(params);
-
     let response = await apiPost(ENDPOINTS.SEND_ARTICLE_VIEWS, params);
     let articleArr = JSON.parse(response);
 
@@ -51,6 +49,11 @@ export async function sendArticleViews(extensionId) {
   }
 }
 
+/**
+ * @function purgeViewedArticles removes viewed articles from the local storage cache
+ * @param {Array<object>} viewed 
+ * @param {Number} viewed.ArticleId - the unique Id of an article object
+ */
 export function purgeViewedArticles(viewed) {
   return new Promise((resolve, reject) => {
     getStorage('articles').then(data => {
@@ -105,7 +108,7 @@ export function storeNewArticles(articles) {
 function identifyNewArticles(current, incoming) {
   return incoming.filter(article => {
     let keepFlag = true;
-    for (currentObj of current) {
+    for (var currentObj of current) {
       if (currentObj.ArticleId == article.ArticleId) {
         keepFlag = false;
       }

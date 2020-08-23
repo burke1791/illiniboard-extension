@@ -1,9 +1,5 @@
-import { BASE_URL, ENDPOINTS } from './constants';
+import { BASE_URL } from './constants';
 import { generateQueryString, generatePostBody, timeDiff } from './helper';
-
-export function registerNewExtension() {
-  return fetch(BASE_URL + ENDPOINTS.REGISTER);
-}
 
 /**
  * @function apiGet Sends GET requests to @endpoint and generates a URI parameter string from @URIParams
@@ -12,8 +8,6 @@ export function registerNewExtension() {
  */
 export function apiGet(endpoint, URIParams) {
   let queryString = generateQueryString(URIParams);
-
-  console.log(queryString);
 
   return new Promise((resolve) => {
     fetch(BASE_URL + endpoint + queryString).then(response => {
@@ -33,7 +27,9 @@ export function apiPost(endpoint, params) {
   /**@todo */
   // let headers = generateHeaders(params.headers);
 
-  let body = generatePostBody(params.body);
+  let bodyParams = params == undefined ? params : params.body;
+
+  let body = generatePostBody(bodyParams);
 
   console.log(body);
 
