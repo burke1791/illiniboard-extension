@@ -5,7 +5,7 @@ export function getUnreadArticleCount(articles) {
 
   for (var key in articles) {
     let article = articles[key];
-    if (!article.viewed || article.viewed !== undefined) unreadCount++;
+    if (!article.viewed || article.viewed === undefined) unreadCount++;
   }
 
   return unreadCount;

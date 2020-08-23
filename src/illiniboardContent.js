@@ -44,10 +44,18 @@ function updateArticleReadStatus() {
 
   url = removeTrailingSlash(url);
   
-  getStorage(url).then(article => {
-    let keys = Object.keys(article);
-    article[keys[0]].viewed = true;
-    setStorage(article);
+  getStorage('articles').then(data => {
+    let articles = data.articles;
+
+    for (var article of articles) {
+      if (article.Url == url) {
+        article.viewed = true;
+      }
+    }
+
+    return articles;
+  }).then(articles => {
+    setStorage({ 'articles': articles });
   });
 }
 
